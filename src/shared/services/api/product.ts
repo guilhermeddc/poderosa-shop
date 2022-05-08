@@ -17,6 +17,8 @@ export interface IProduct {
   id: string;
   code: string;
   image: string;
+  images: string[];
+  secondaryImage: string;
   description: string;
   quantity: number;
   saleValue: number;
@@ -123,24 +125,24 @@ const getProduct = async (id: string): Promise<IProduct> => {
 
     const size: Set<string> = new Set([]);
     const quantityToSize: Set<Map<number, string>> = new Set();
+    const images: Set<string> = new Set([]);
 
     const productDetail = aux.docs.map((data) => {
       size.add(data.data().size);
       quantityToSize.add(new Map([[data.data().quantity, data.data().size]]));
+      !!data.data().image && images.add(data.data().image);
       return {
         ...data.data(),
         id: data.id,
       };
     }) as IProduct[];
 
-    // eslint-disable-next-line
-    console.log('*** quantityToSize', quantityToSize);
-
     return {
       ...product.data(),
       id: product.id,
       size: Array.from(size).join(', '),
       quantity: productDetail.length,
+      images: Array.from(images),
     } as IProduct;
   } catch (error: any) {
     const errorCode = error.code;

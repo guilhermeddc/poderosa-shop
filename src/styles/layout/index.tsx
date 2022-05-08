@@ -1,20 +1,24 @@
-import {Box, Stack, Typography, useMediaQuery, useTheme} from '@mui/material';
+import {useState} from 'react';
+import {Box, Paper, Stack, Typography, useTheme} from '@mui/material';
 import {NavLink} from 'shared/components';
 import Link from 'next/link';
-import {useBackground} from 'shared/hooks';
+import {useBackground, useMediaQuery} from 'shared/hooks';
+import {LeftSide, Menu, RightSide} from './components';
 
 export function Layout({children}: {children: React.ReactNode}) {
-  const theme = useTheme();
-  const md = useMediaQuery(theme.breakpoints.up('md'));
+  const [menuActive, setMenuActive] = useState(false);
+
+  const {md} = useMediaQuery();
 
   const {layoutColors, activeZoom} = useBackground();
 
   return (
-    <Box
-      bgcolor={layoutColors.bgLayout}
-      sx={{transition: 'all 0.3s ease-in-out'}}>
+    <Box sx={{transition: 'all 0.3s ease-in-out'}}>
       <Link href="/">
         <Stack
+          component={Paper}
+          borderRadius={0}
+          elevation={1}
           position="fixed"
           top={0}
           left={0}
@@ -22,7 +26,8 @@ export function Layout({children}: {children: React.ReactNode}) {
           height={md ? 80 : 40}
           justifyContent="center"
           alignItems="center"
-          bgcolor={layoutColors.bgLogo}
+          zIndex={9}
+          bgcolor={menuActive ? 'white' : layoutColors.bgLogo}
           sx={{
             cursor: 'pointer',
             transition: 'all 0.3s ease-in-out',
@@ -30,21 +35,13 @@ export function Layout({children}: {children: React.ReactNode}) {
               opacity: 0.8,
             },
           }}>
-          <Typography color={layoutColors.colorLogo} variant={md ? 'h4' : 'h6'}>
+          <Typography
+            color={menuActive ? '#23222a' : layoutColors.logo}
+            variant={md ? 'h4' : 'h5'}>
             AP
           </Typography>
         </Stack>
       </Link>
-
-      {!md && (
-        <Stack
-          position="fixed"
-          bottom={0}
-          right={0}
-          width={md ? 80 : 40}
-          height={md ? 80 : 40}
-          bgcolor="primary.main"></Stack>
-      )}
 
       <Stack
         direction="row"
@@ -53,22 +50,35 @@ export function Layout({children}: {children: React.ReactNode}) {
         height={md ? 80 : 40}
         flex={1}
         mr={{md: 10, xs: 5}}
+        zIndex={10}
+        bgcolor={layoutColors.bgRight}
         spacing={6}>
         {md && (
           <>
-            <NavLink link="/collection" text="Coleções" />
+            <NavLink link="/" text="Coleções" />
             <NavLink link="/shop" text="Loja" />
             <NavLink link="/about" text="Sobre" />
           </>
         )}
       </Stack>
 
+      <LeftSide />
+
+      <Menu menuActive={menuActive} setMenuActive={setMenuActive} />
+
+      <RightSide />
+
       <Stack
-        ml={activeZoom ? {md: 0, xs: 0} : {md: 10, xs: 5}}
-        mr={activeZoom ? {md: 0, xs: 0} : {md: 10, xs: 5}}
-        sx={{transition: 'all 0.3s ease-in-out'}}
-        minHeight={md ? 'calc(100vh - 160px)' : 'calc(100vh - 80px)'}
-        bgcolor="white">
+        component={Paper}
+        elevation={0}
+        borderRadius={0}
+        ml={{md: 10, xs: 5}}
+        mr={{md: 10, xs: 5}}
+        sx={{
+          transform: activeZoom ? 'scale(0.99)' : 'scale(1)',
+          transition: 'all 0.3s ease-in-out',
+        }}
+        minHeight={md ? 'calc(100vh - 160px)' : 'calc(100vh - 80px)'}>
         {children}
       </Stack>
 
@@ -77,13 +87,20 @@ export function Layout({children}: {children: React.ReactNode}) {
         alignItems="center"
         height={md ? 80 : 40}
         flex={1}
+        bgcolor={layoutColors.bgLeft}
         ml={{md: 10, xs: 5}}
         spacing={4}>
         {md && (
           <>
-            <NavLink link="/" text="Coleções" />
-            <NavLink link="/" text="Loja" />
-            <NavLink link="/" text="Sobre" />
+            <NavLink link="/" text="Contato" />
+            <NavLink
+              link="https://www.instagram.com/poderosa374/"
+              text="Instagram"
+            />
+            <NavLink
+              link="https://www.facebook.com/profile.php?id=100057579422135"
+              text="Facebook"
+            />
           </>
         )}
       </Stack>

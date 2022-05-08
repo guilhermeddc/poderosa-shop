@@ -1,11 +1,16 @@
-import React, {createContext, useEffect, useState} from 'react';
+import React, {createContext, useCallback, useEffect, useState} from 'react';
 
 interface ILayoutColors {
-  bgLayout: string;
-  colorNavItem: string;
-  bgContent: string;
+  bgLeft: string;
+  bgRight: string;
   bgLogo: string;
-  colorLogo: string;
+  navItem: string;
+  logo: string;
+}
+
+interface IClick {
+  active: boolean;
+  click: () => void | Promise<void>;
 }
 
 export interface IContextBackground {
@@ -13,6 +18,10 @@ export interface IContextBackground {
   setLayoutColors: React.Dispatch<React.SetStateAction<ILayoutColors>>;
   activeZoom: boolean;
   setActiveZoom: React.Dispatch<React.SetStateAction<boolean>>;
+  leftClick: IClick;
+  setLeftClick: React.Dispatch<React.SetStateAction<IClick>>;
+  rightClick: IClick;
+  setRightClick: React.Dispatch<React.SetStateAction<IClick>>;
 }
 
 export const BackgroundContext = createContext<IContextBackground>(
@@ -24,33 +33,42 @@ interface IProps {
 }
 
 export const BackgroundProvider: React.FC<IProps> = ({children}) => {
+  const [leftClick, setLeftClick] = useState({
+    active: false,
+    click: () => {},
+  });
+  const [rightClick, setRightClick] = useState({
+    active: false,
+    click: () => {},
+  });
   const [layoutColors, setLayoutColors] = useState({
-    bgLayout: 'white',
-    colorNavItem: 'black',
-    bgContent: 'white',
-    bgLogo: 'black',
-    colorLogo: 'white',
+    bgLeft: 'white',
+    bgRight: 'white',
+    bgLogo: '#23222a',
+    navItem: '#23222a',
+    logo: 'white',
   });
   const [activeZoom, setActiveZoom] = useState(false);
 
   useEffect(() => {
     if (activeZoom)
       setTimeout(() => {
-        // eslint-disable-next-line
-        console.log('*** activeZoom', activeZoom);
         setActiveZoom(false);
-      }, 300);
-
-    // eslint-disable-next-line
-    console.log('*** activeZoom', activeZoom);
+      }, 400);
   }, [activeZoom]);
-
-  // eslint-disable-next-line
-  console.log('*** activeZoom', activeZoom);
 
   return (
     <BackgroundContext.Provider
-      value={{layoutColors, setLayoutColors, activeZoom, setActiveZoom}}>
+      value={{
+        layoutColors,
+        setLayoutColors,
+        activeZoom,
+        setActiveZoom,
+        leftClick,
+        rightClick,
+        setLeftClick,
+        setRightClick,
+      }}>
       {children}
     </BackgroundContext.Provider>
   );

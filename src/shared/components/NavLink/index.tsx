@@ -6,19 +6,27 @@ import {useBackground} from 'shared/hooks';
 interface IProps {
   link: string;
   text: string;
+  align?: 'right' | 'left' | 'inherit' | 'center' | 'justify' | undefined;
+  color?: string;
 }
 
-export const NavLink: React.FC<IProps> = ({link, text}) => {
+export const NavLink: React.FC<IProps> = ({
+  link,
+  text,
+  align = undefined,
+  color,
+}) => {
   const {layoutColors} = useBackground();
 
   return (
     <Link href={link}>
       <Typography
-        variant="subtitle1"
-        fontWeight={500}
-        fontSize={16}
-        color={layoutColors.colorNavItem}
-        letterSpacing={3}
+        variant="body2"
+        textTransform="uppercase"
+        fontWeight={600}
+        color={color || layoutColors.navItem}
+        align={align}
+        letterSpacing={2}
         sx={{
           cursor: 'pointer',
           transition: 'all 0.2s ease-in-out',

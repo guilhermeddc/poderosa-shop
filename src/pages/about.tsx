@@ -5,17 +5,32 @@ import {useBackground} from 'shared/hooks';
 import {Head} from 'shared/infra/components/Head';
 
 const About: NextPage = () => {
-  const {setLayoutColors, setActiveZoom} = useBackground();
+  const {setLayoutColors, setActiveZoom, setLeftClick, setRightClick} =
+    useBackground();
 
   useEffect(() => {
     setLayoutColors({
-      bgLayout: 'black',
-      colorNavItem: 'white',
-      bgContent: 'black',
+      navItem: 'white',
       bgLogo: 'white',
-      colorLogo: 'black',
+      logo: '#23222a',
+      bgLeft: '#23222a',
+      bgRight: '#23222a',
     });
     setActiveZoom(true);
+    setRightClick(
+      (state) =>
+        (state = {
+          ...state,
+          active: true,
+        }),
+    );
+    setLeftClick(
+      (state) =>
+        (state = {
+          ...state,
+          active: true,
+        }),
+    );
   }, []);
 
   return (
@@ -24,7 +39,7 @@ const About: NextPage = () => {
 
       <Stack
         flex={1}
-        pt={{md: 8, xs: 4}}
+        paddingY={{md: 8, xs: 4}}
         paddingX={{md: 8, xs: 4}}
         direction={{md: 'row', sm: 'column', xs: 'column'}}
         justifyContent="center"
@@ -55,7 +70,7 @@ const About: NextPage = () => {
           </Typography>
         </Stack>
 
-        <Stack flex={1} spacing={{md: 4, xs: 2}} pb={4} pt={{md: 0, xs: 4}}>
+        <Stack flex={1} spacing={{md: 4, xs: 2}} pt={{md: 0, xs: 4}}>
           <Typography variant="h4" fontSize={{md: 56, xs: 24}}>
             VALORES
           </Typography>

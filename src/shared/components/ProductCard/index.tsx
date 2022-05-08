@@ -1,7 +1,6 @@
-import {Stack, Typography} from '@mui/material';
-import Image from 'next/image';
+import {Paper, Stack, Typography} from '@mui/material';
 import Link from 'next/link';
-import React from 'react';
+import React, {useRef} from 'react';
 import {IProduct} from 'shared/services/api/product';
 
 interface IProps {
@@ -9,31 +8,35 @@ interface IProps {
 }
 
 export const ProductCard: React.FC<IProps> = ({product}) => {
-  return (
-    <Link href={`/product/${product.id}`}>
-      <Stack
-        spacing={5}
-        mb={5}
-        sx={{
-          cursor: 'pointer',
-          transition: 'all 0.3s ease-in-out',
-          ':hover': {
-            boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-            opacity: 0.9,
-          },
-        }}>
-        <Image
-          src="/assets/teste.jpeg"
-          alt={product.description}
-          objectFit="cover"
-          width="100%"
-          height={500}
-        />
+  const stackRef = useRef<HTMLDivElement>(null);
 
-        <Typography variant="subtitle1" align="center">
-          {product.description}
-        </Typography>
-      </Stack>
-    </Link>
+  return (
+    <Stack ref={stackRef} width="100%" component={Paper} borderRadius={0}>
+      <Link href={`/product/${product.id}`}>
+        <Stack
+          spacing={4}
+          minHeight={400}
+          height="100%"
+          justifyContent="flex-end"
+          p={2}
+          sx={{
+            cursor: 'pointer',
+            transition: 'all 0.3s ease-in-out',
+            backgroundImage: `url(${product.image || '/assets/teste.png'})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            ':hover': {
+              opacity: 0.9,
+            },
+          }}>
+          <Stack p={2} bgcolor="#23222a66">
+            <Typography variant="h5" align="center" fontSize={20} color="white">
+              {product.description}
+            </Typography>
+          </Stack>
+        </Stack>
+      </Link>
+    </Stack>
   );
 };
