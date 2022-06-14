@@ -1,5 +1,5 @@
 import 'styles/globals.css';
-import React from 'react';
+import React, {useState} from 'react';
 import Head from 'next/head';
 import {AppProps} from 'next/app';
 import {ThemeProvider} from '@mui/material/styles';
@@ -11,6 +11,8 @@ import {Layout} from 'styles/layout';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {ReactQueryDevtools} from 'react-query/devtools';
 import {AppProvider} from 'shared/context';
+import {useRouter} from 'next/router';
+import {ProtectedRoute} from 'shared/components';
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -20,7 +22,18 @@ interface MyAppProps extends AppProps {
 
 export default function MyApp(props: MyAppProps) {
   const {Component, emotionCache = clientSideEmotionCache, pageProps} = props;
-  const [queryClient] = React.useState(() => new QueryClient());
+  const [queryClient] = useState(() => new QueryClient());
+
+  const router = useRouter();
+
+  const noAuthRequired = [
+    '/',
+    '/about',
+    '/login',
+    '/register',
+    '/collection',
+    '/product/:id',
+  ];
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -32,7 +45,13 @@ export default function MyApp(props: MyAppProps) {
           <AppProvider>
             <CssBaseline />
             <Layout>
-              <Component {...pageProps} />
+              {noAuthRequired.includes(router.pathname) ? (
+                <Component {...pageProps} />
+              ) : (
+                <ProtectedRoute>
+                  <Component {...pageProps} />
+                </ProtectedRoute>
+              )}
               <ReactQueryDevtools initialIsOpen={false} />
             </Layout>
           </AppProvider>

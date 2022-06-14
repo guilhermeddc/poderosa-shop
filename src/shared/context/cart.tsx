@@ -1,11 +1,13 @@
 import React, {createContext, useCallback, useMemo, useState} from 'react';
 import {IProduct} from 'shared/services/api/product';
+import Cookie from 'js-cookie';
 
 export interface IAddToCart {
   product: {
     id: string;
     title: string;
     image: string;
+    size: string;
   };
   quantity: number;
   value: number;
@@ -15,7 +17,7 @@ export interface IContextCart {
   products: IAddToCart[];
   cartQuantity: number;
   cartTotalPrice: number;
-  addNewProduct(product: IProduct): void;
+  addNewProduct(product: IProduct, size: string): void;
   addProduct(id: string): void;
   removeProduct(id: string): void;
   deleteProduct(id: string): void;
@@ -28,7 +30,15 @@ interface IProps {
 }
 
 export const CartProvider: React.FC<IProps> = ({children}) => {
-  const [products, setProducts] = useState<IAddToCart[]>([]);
+  const [products, setProducts] = useState<IAddToCart[]>(() => {
+    const cartProducts = Cookie.get('cartProducts');
+
+    if (cartProducts) {
+      return JSON.parse(cartProducts);
+    }
+
+    return [];
+  });
 
   const cartQuantity = useMemo(() => {
     let quantity = 0;
@@ -50,52 +60,53 @@ export const CartProvider: React.FC<IProps> = ({children}) => {
     return value;
   }, [products]);
 
-  const handleAddNewProduct = useCallback(
-    (product: IProduct) => {
-      setProducts((state) => [
+  const handleAddNewProduct = useCallback((product: IProduct, size: string) => {
+    setProducts((state) => {
+      const aux = [
         ...state,
         {
           product: {
             id: product.id,
             title: product.description,
             image: product.image,
+            size,
           },
           quantity: 1,
           value: product.saleValue,
         },
-      ]);
-    },
-    [products],
-  );
+      ];
+      Cookie.set('cartProducts', JSON.stringify(aux));
+      return aux;
+    });
+  }, []);
 
-  const handleAddProduct = useCallback(
-    (id: string) => {
-      setProducts(
-        products.map((p) =>
-          p.product.id === id ? {...p, quantity: p.quantity + 1} : p,
-        ),
+  const handleAddProduct = useCallback((id: string) => {
+    setProducts((state) => {
+      const aux = state.map((p) =>
+        p.product.id === id ? {...p, quantity: p.quantity + 1} : p,
       );
-    },
-    [products],
-  );
+      Cookie.set('cartProducts', JSON.stringify(aux));
+      return aux;
+    });
+  }, []);
 
-  const handleRemoveProduct = useCallback(
-    (id: string) => {
-      setProducts(
-        products.map((p) =>
-          p.product.id === id ? {...p, quantity: p.quantity - 1} : p,
-        ),
+  const handleRemoveProduct = useCallback((id: string) => {
+    setProducts((state) => {
+      const aux = state.map((p) =>
+        p.product.id === id ? {...p, quantity: p.quantity - 1} : p,
       );
-    },
-    [products],
-  );
+      Cookie.set('cartProducts', JSON.stringify(aux));
+      return aux;
+    });
+  }, []);
 
-  const handleDeleteProduct = useCallback(
-    (id: string) => {
-      setProducts(products.filter((p) => p.product.id !== id));
-    },
-    [products],
-  );
+  const handleDeleteProduct = useCallback((id: string) => {
+    setProducts((state) => {
+      const aux = state.filter((p) => p.product.id !== id);
+      Cookie.set('cartProducts', JSON.stringify(aux));
+      return aux;
+    });
+  }, []);
 
   return (
     <CartContext.Provider

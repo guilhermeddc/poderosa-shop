@@ -10,7 +10,7 @@ function useBackground(): IContextBackground {
   const context = useContext(BackgroundContext);
 
   if (!context) {
-    throw new Error('useBackground must be used within an TitleProvider');
+    throw new Error('useBackground must be used within an BackgroundProvider');
   }
 
   return context;

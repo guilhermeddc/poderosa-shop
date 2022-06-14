@@ -1,15 +1,18 @@
 import {useState} from 'react';
-import {Box, Paper, Stack, Typography, useTheme} from '@mui/material';
+import {Badge, Box, IconButton, Paper, Stack, Typography} from '@mui/material';
 import {NavLink} from 'shared/components';
 import Link from 'next/link';
-import {useBackground, useMediaQuery} from 'shared/hooks';
+import {useBackground, useCart, useMediaQuery} from 'shared/hooks';
 import {LeftSide, Menu, RightSide} from './components';
+import {ShoppingCart} from '@mui/icons-material';
+import {useRouter} from 'next/router';
 
 export function Layout({children}: {children: React.ReactNode}) {
   const [menuActive, setMenuActive] = useState(false);
 
+  const router = useRouter();
   const {md} = useMediaQuery();
-
+  const {cartQuantity} = useCart();
   const {layoutColors, activeZoom} = useBackground();
 
   return (
@@ -58,6 +61,11 @@ export function Layout({children}: {children: React.ReactNode}) {
             <NavLink link="/" text="Coleções" />
             <NavLink link="/shop" text="Loja" />
             <NavLink link="/about" text="Sobre" />
+            <IconButton color="success" onClick={() => router.push('/cart')}>
+              <Badge badgeContent={cartQuantity} color="secondary">
+                <ShoppingCart sx={{color: layoutColors.navItem}} />
+              </Badge>
+            </IconButton>
           </>
         )}
       </Stack>

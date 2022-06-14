@@ -1,5 +1,6 @@
 import React from 'react';
 
+import {AuthProvider} from './auth';
 import {BackgroundProvider} from './background';
 import {CartProvider} from './cart';
 
@@ -10,7 +11,9 @@ interface IProps {
 export const AppProvider: React.FC<IProps> = ({children}) => {
   return (
     <BackgroundProvider>
-      <CartProvider>{children}</CartProvider>
+      <AuthProvider>
+        <CartProvider>{children}</CartProvider>
+      </AuthProvider>
     </BackgroundProvider>
   );
 };
