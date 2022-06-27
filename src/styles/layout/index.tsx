@@ -1,10 +1,18 @@
 import {useState} from 'react';
-import {Badge, Box, IconButton, Paper, Stack, Typography} from '@mui/material';
+import {
+  Avatar,
+  Badge,
+  Box,
+  IconButton,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material';
 import {NavLink} from 'shared/components';
 import Link from 'next/link';
-import {useBackground, useCart, useMediaQuery} from 'shared/hooks';
+import {useAuth, useBackground, useCart, useMediaQuery} from 'shared/hooks';
 import {LeftSide, Menu, RightSide} from './components';
-import {ShoppingCart} from '@mui/icons-material';
+import {ShoppingCart, AccountCircleRounded} from '@mui/icons-material';
 import {useRouter} from 'next/router';
 
 export function Layout({children}: {children: React.ReactNode}) {
@@ -13,6 +21,7 @@ export function Layout({children}: {children: React.ReactNode}) {
   const router = useRouter();
   const {md} = useMediaQuery();
   const {cartQuantity} = useCart();
+  const {user} = useAuth();
   const {layoutColors, activeZoom} = useBackground();
 
   return (
@@ -55,17 +64,33 @@ export function Layout({children}: {children: React.ReactNode}) {
         mr={{md: 10, xs: 5}}
         zIndex={10}
         bgcolor={layoutColors.bgRight}
-        spacing={6}>
+        spacing={4}>
         {md && (
           <>
             <NavLink link="/" text="Coleções" />
             <NavLink link="/shop" text="Loja" />
             <NavLink link="/about" text="Sobre" />
-            <IconButton color="success" onClick={() => router.push('/cart')}>
-              <Badge badgeContent={cartQuantity} color="secondary">
-                <ShoppingCart sx={{color: layoutColors.navItem}} />
-              </Badge>
-            </IconButton>
+            <NavLink link="/contact" text="Contato" />
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              justifyContent="center">
+              <IconButton color="success" onClick={() => router.push('/cart')}>
+                <Badge badgeContent={cartQuantity} color="secondary">
+                  <ShoppingCart sx={{color: layoutColors.navItem}} />
+                </Badge>
+              </IconButton>
+              {user && (
+                <IconButton>
+                  {user.imageUrl ? (
+                    <Avatar src={user.imageUrl} alt={user.name} />
+                  ) : (
+                    <AccountCircleRounded />
+                  )}
+                </IconButton>
+              )}
+            </Stack>
           </>
         )}
       </Stack>

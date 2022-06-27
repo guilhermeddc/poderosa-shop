@@ -143,8 +143,8 @@ const Product: NextPage = () => {
         {product?.image && (
           <Image
             src={product.images[countImages.current]}
-            width={502.4}
-            height={603.2}
+            width={402.4}
+            height={503.2}
             alt={product.description}
             loading="lazy"
             style={{

@@ -16,17 +16,28 @@ import {
 } from '@mui/material';
 import {useRouter} from 'next/router';
 import {NextPage} from 'next/types';
-import {useEffect} from 'react';
-import {useBackground, useCart} from 'shared/hooks';
+import {useCallback, useEffect, useState} from 'react';
+import {useAuth, useBackground, useCart} from 'shared/hooks';
 import {Head} from 'shared/infra/components/Head';
+import {feedback} from 'shared/services/alertService';
+import {orderService} from 'shared/services/api/order';
 import {moneyMask} from 'shared/utils/masks';
 
 const Cart: NextPage = () => {
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
   const {setLayoutColors, setActiveZoom, setLeftClick, setRightClick} =
     useBackground();
-  const {products, addProduct, removeProduct, deleteProduct, cartTotalPrice} =
-    useCart();
+  const {
+    products,
+    addProduct,
+    removeProduct,
+    deleteProduct,
+    cartTotalPrice,
+    clearCart,
+  } = useCart();
+  const {user} = useAuth();
 
   useEffect(() => {
     setLayoutColors({
@@ -52,6 +63,31 @@ const Cart: NextPage = () => {
         }),
     );
   }, []);
+
+  const handleCreateOrder = useCallback(async () => {
+    setLoading(true);
+    try {
+      if (user?.id) {
+        const response = await orderService.createOrder({
+          userId: user.id,
+          products,
+          value: cartTotalPrice,
+        });
+
+        if (response.success) {
+          feedback('Pedido criado com sucesso!', 'success');
+          router.push('/');
+          clearCart();
+        }
+      } else {
+        router.push('/login');
+      }
+    } catch (error: any) {
+      feedback(String(error.message), 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [user, products, clearCart, router]);
 
   return (
     <>
@@ -100,7 +136,7 @@ const Cart: NextPage = () => {
                             <Button
                               data-testid={`remove-product-${p.product.id}`}
                               onClick={() => removeProduct(p.product.id)}
-                              disabled={p.quantity === 1}>
+                              disabled={p.quantity === 1 || loading}>
                               <RemoveRounded />
                             </Button>
 
@@ -108,6 +144,7 @@ const Cart: NextPage = () => {
 
                             <Button
                               data-testid={`add-product-${p.product.id}`}
+                              disabled={loading}
                               onClick={() => addProduct(p.product.id)}>
                               <AddRounded />
                             </Button>
@@ -118,6 +155,7 @@ const Cart: NextPage = () => {
                       <TableCell>
                         <Button
                           data-testid={`delete-product-${p.product.id}`}
+                          disabled={loading}
                           onClick={() => deleteProduct(p.product.id)}>
                           Excluir
                         </Button>
@@ -166,6 +204,7 @@ const Cart: NextPage = () => {
           <Stack spacing={3} direction="row" justifyContent="flex-end">
             <Button
               variant="contained"
+              disabled={loading}
               color="secondary"
               sx={{width: 250}}
               onClick={() => router.push('/')}>
@@ -174,10 +213,11 @@ const Cart: NextPage = () => {
 
             <Button
               variant="contained"
-              disabled={products.length === 0}
+              disabled={products.length === 0 || loading}
+              onClick={handleCreateOrder}
               color="primary"
               sx={{width: 250}}>
-              Finalizar Compra
+              {user ? 'Finalizar Compra' : 'Faça o login para continuar'}
             </Button>
           </Stack>
         </Grid>

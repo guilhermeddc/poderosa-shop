@@ -21,14 +21,14 @@ const About: NextPage = () => {
       (state) =>
         (state = {
           ...state,
-          active: true,
+          active: false,
         }),
     );
     setLeftClick(
       (state) =>
         (state = {
           ...state,
-          active: true,
+          active: false,
         }),
     );
   }, []);

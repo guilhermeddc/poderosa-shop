@@ -2,7 +2,7 @@ import React, {createContext, useCallback, useMemo, useState} from 'react';
 import {IProduct} from 'shared/services/api/product';
 import Cookie from 'js-cookie';
 
-export interface IAddToCart {
+export interface IProductCart {
   product: {
     id: string;
     title: string;
@@ -14,13 +14,14 @@ export interface IAddToCart {
 }
 
 export interface IContextCart {
-  products: IAddToCart[];
+  products: IProductCart[];
   cartQuantity: number;
   cartTotalPrice: number;
   addNewProduct(product: IProduct, size: string): void;
   addProduct(id: string): void;
   removeProduct(id: string): void;
   deleteProduct(id: string): void;
+  clearCart(): void;
 }
 
 export const CartContext = createContext<IContextCart>({} as IContextCart);
@@ -30,7 +31,7 @@ interface IProps {
 }
 
 export const CartProvider: React.FC<IProps> = ({children}) => {
-  const [products, setProducts] = useState<IAddToCart[]>(() => {
+  const [products, setProducts] = useState<IProductCart[]>(() => {
     const cartProducts = Cookie.get('cartProducts');
 
     if (cartProducts) {
@@ -108,6 +109,11 @@ export const CartProvider: React.FC<IProps> = ({children}) => {
     });
   }, []);
 
+  const handleClearCart = useCallback(() => {
+    Cookie.remove('cartProducts');
+    setProducts([]);
+  }, []);
+
   return (
     <CartContext.Provider
       value={{
@@ -118,6 +124,7 @@ export const CartProvider: React.FC<IProps> = ({children}) => {
         removeProduct: handleRemoveProduct,
         deleteProduct: handleDeleteProduct,
         addNewProduct: handleAddNewProduct,
+        clearCart: handleClearCart,
       }}>
       {children}
     </CartContext.Provider>
