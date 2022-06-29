@@ -2,6 +2,7 @@ export * from './UI/NavLink';
 export * from './UI/ProductCard';
 export * from './UI/ProtectedRoute';
 export * from './UI/Copyright';
+export * from './UI/TabPanel';
 
 export * from './Form/Checkbox';
 export * from './Form/MultiSelect';

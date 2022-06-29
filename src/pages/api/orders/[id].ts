@@ -1,5 +1,5 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
-import {orderService} from 'shared/services/api/order';
+import {getOrdersByUserId} from './_methods';
 
 export default async function getProduct(
   req: NextApiRequest,
@@ -12,10 +12,10 @@ export default async function getProduct(
     return;
   }
 
-  const orders = await orderService.getOrdersByUserId(id as string);
+  const orders = await getOrdersByUserId(id as string);
 
   if (!orders) {
-    res.status(404).json({error: 'Product not found'});
+    res.status(404).json({error: 'Orders not found'});
     return;
   }
 

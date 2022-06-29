@@ -22,9 +22,6 @@ export const AuthProvider: React.FC<IProps> = ({children}) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // eslint-disable-next-line
-  console.log('*** user', user);
-
   const router = useRouter();
 
   const handleSignIn = useCallback(async (type: string) => {
@@ -34,8 +31,6 @@ export const AuthProvider: React.FC<IProps> = ({children}) => {
       if (response) {
         setUser(response);
 
-        // eslint-disable-next-line
-        console.log('*** response', response);
         router.push('/');
       }
     } catch (error) {

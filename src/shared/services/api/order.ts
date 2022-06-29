@@ -1,16 +1,6 @@
-import {
-  collection,
-  setDoc,
-  doc,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  where,
-} from 'firebase/firestore';
+import axios from 'axios';
 import {IProductCart} from 'shared/context/cart';
 import {IRequestResult} from 'shared/interfaces';
-import {db} from '../firebase';
 
 export interface ICreateOrder {
   products: IProductCart[];
@@ -19,17 +9,13 @@ export interface ICreateOrder {
   createdAt?: Date;
 }
 
-export const orderDB = collection(db, 'orders');
-
-const createOrder = async (order: ICreateOrder): Promise<IRequestResult> => {
+const createOrder = async (payload: ICreateOrder): Promise<IRequestResult> => {
   try {
-    await setDoc(doc(orderDB), {...order, createdAt: new Date()});
+    await axios.post('api/orders', payload);
 
     return {success: true};
   } catch (error: any) {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    throw new Error(`${errorCode} ${errorMessage}`);
+    throw new Error(`${error.code} ${error.message}`);
   }
 };
 
@@ -37,29 +23,16 @@ export interface IOrder {
   id: string;
   products: IProductCart[];
   value: number;
+  createdAt: Date;
 }
 
 const getOrdersByUserId = async (userId: string): Promise<IOrder[]> => {
   try {
-    const orders = await getDocs(
-      query(
-        orderDB,
-        where('userId', '==', userId),
-        orderBy('createdAt', 'asc'),
-        limit(10),
-      ),
-    );
+    const orders = await axios.get(`api/orders/${userId}`);
 
-    return orders.docs.map((data) => {
-      return {
-        ...data.data(),
-        id: data.id,
-      };
-    }) as IOrder[];
+    return orders.data;
   } catch (error: any) {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    throw new Error(`${errorCode} ${errorMessage}`);
+    throw new Error(`${error.code} ${error.message}`);
   }
 };
 

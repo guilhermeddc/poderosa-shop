@@ -82,7 +82,7 @@ export function Layout({children}: {children: React.ReactNode}) {
                 </Badge>
               </IconButton>
               {user && (
-                <IconButton>
+                <IconButton onClick={() => router.push('/profile')}>
                   {user.imageUrl ? (
                     <Avatar src={user.imageUrl} alt={user.name} />
                   ) : (
