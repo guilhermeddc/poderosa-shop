@@ -45,13 +45,13 @@ export default function MyApp(props: MyAppProps) {
           <AppProvider>
             <CssBaseline />
             <Layout>
-              {noAuthRequired.includes(router.pathname) ? (
+              {/* {noAuthRequired.includes(router.pathname) ? (
                 <Component {...pageProps} />
               ) : (
-                <ProtectedRoute>
-                  <Component {...pageProps} />
-                </ProtectedRoute>
-              )}
+                <ProtectedRoute> */}
+              <Component {...pageProps} />
+              {/* </ProtectedRoute>
+              )} */}
               <ReactQueryDevtools initialIsOpen={false} />
             </Layout>
           </AppProvider>
